@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import OrderItem
 from .forms import OrderCreateForm
 from cart.cart import Cart
+from .tasks import order_created
 
 def order_create(request):
     cart = Cart(request)
@@ -16,6 +17,12 @@ def order_create(request):
                 quantity=item['quantity'])
             #очищаем корзину
             cart.clear()
+            # запуск асинхронной задачи
+            """
+            Запуск rabbitmq:
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+             """
+            order_created.delay(order.id)
             return render(request,
                 'orders/order/created.html',
                 {'order': order})
