@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.urls import reverse
+from django.shortcuts import render, redirect
 from .models import OrderItem
 from .forms import OrderCreateForm
 from cart.cart import Cart
@@ -23,6 +24,9 @@ def order_create(request):
 docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
              """
             order_created.delay(order.id)
+            # сохранение заказа в сессии
+            request.session['order_id'] = order.id
+            return redirect(reverse('payment:process'))
             return render(request,
                 'orders/order/created.html',
                 {'order': order})
