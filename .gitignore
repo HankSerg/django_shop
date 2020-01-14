@@ -94,3 +94,7 @@ media/users/*
 media/images/*
 media/cache/*
 media/products/*
+
+static/
+
+weasyprint-website.pdf
